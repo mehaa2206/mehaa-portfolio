@@ -1,0 +1,46 @@
+name: Workflow notification
+
+on:
+  workflow_run:
+    workflows:
+      - Validate portfolio
+      - Pull request checks
+      - Deploy portfolio to GitHub Pages
+      - Lighthouse audit
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write workflow result to summary
+        env:
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name || 'Manual notification test' }}
+          WORKFLOW_STATUS: ${{ github.event.workflow_run.conclusion || 'manual' }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          {
+            echo "## Portfolio workflow notification"
+            echo ""
+            echo "- Workflow: ${WORKFLOW_NAME}"
+            echo "- Result: ${WORKFLOW_STATUS}"
+            echo "- Commit: ${COMMIT_SHA}"
+            echo ""
+            echo "This summary is available in the GitHub Actions run."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Optional webhook notification
+        if: ${{ secrets.PORTFOLIO_NOTIFY_WEBHOOK != '' && github.event_name == 'workflow_run' }}
+        env:
+          WEBHOOK_URL: ${{ secrets.PORTFOLIO_NOTIFY_WEBHOOK }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          WORKFLOW_STATUS: ${{ github.event.workflow_run.conclusion }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          curl --fail --silent --show-error \
+            -H "Content-Type: application/json" \
+            -d "{\"text\":\"${WORKFLOW_NAME} finished with ${WORKFLOW_STATUS} in ${REPOSITORY}\"}" \
+            "$WEBHOOK_URL"

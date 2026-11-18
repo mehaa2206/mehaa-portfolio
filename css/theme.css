@@ -1,0 +1,74 @@
+
+:root {
+  color-scheme: light;
+
+  /* Light theme — Lavender, Soft White and Deep Plum */
+  --paper: #F5F1FA;
+  --paper-2: #E5DDF0;
+  --ink: #34243F;
+  --muted: #756A7D;
+  --line: rgba(52, 36, 63, 0.14);
+  --accent: #72558C;
+  --accent-2: #C8B6E2;
+  --dark: #34243F;
+  --card: #FCFAFF;
+  --shadow: 0 24px 70px rgba(52, 36, 63, 0.10);
+
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: "Trebuchet MS", Arial, sans-serif;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Dark theme — Deep Plum, Dark Lavender and Soft Lilac */
+  --paper: #211A29;
+  --paper-2: #30243B;
+  --ink: #F5F1FA;
+  --muted: #C2B5CC;
+  --line: rgba(245, 241, 250, 0.16);
+  --accent: #C8B6E2;
+  --accent-2: #A98BC7;
+  --dark: #F5F1FA;
+  --card: #30243B;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.30);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  transition: background .35s ease, color .35s ease;
+}
+
+button, a {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
