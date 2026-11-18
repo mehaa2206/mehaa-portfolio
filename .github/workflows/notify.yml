@@ -1,3 +1,4 @@
+
 name: Workflow notification
 
 on:
@@ -32,15 +33,20 @@ jobs:
             echo ""
             echo "This summary is available in the GitHub Actions run."
           } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Optional webhook notification
-        if: ${{ secrets.PORTFOLIO_NOTIFY_WEBHOOK != '' && github.event_name == 'workflow_run' }}
+        if: ${{ github.event_name == 'workflow_run' }}
         env:
           WEBHOOK_URL: ${{ secrets.PORTFOLIO_NOTIFY_WEBHOOK }}
           WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
           WORKFLOW_STATUS: ${{ github.event.workflow_run.conclusion }}
           REPOSITORY: ${{ github.repository }}
         run: |
-          curl --fail --silent --show-error \
-            -H "Content-Type: application/json" \
-            -d "{\"text\":\"${WORKFLOW_NAME} finished with ${WORKFLOW_STATUS} in ${REPOSITORY}\"}" \
-            "$WEBHOOK_URL"
+          if [ -n "$WEBHOOK_URL" ]; then
+            curl --fail --silent --show-error \
+              -H "Content-Type: application/json" \
+              -d "{\"text\":\"${WORKFLOW_NAME} finished with ${WORKFLOW_STATUS} in ${REPOSITORY}\"}" \
+              "$WEBHOOK_URL"
+          else
+            echo "No webhook configured. Skipping external notification."
+          fi
